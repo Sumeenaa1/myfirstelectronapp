@@ -16,35 +16,47 @@ function createWindow() {
 
     win.loadFile('index.html');
 
-    // 🔥 MENU ADD
     const menuTemplate = [
-        {
-            label: 'File',
-            submenu: [
-                {
-                    label: 'Save',
-                    accelerator: 'CmdOrCtrl+S',
-                    click: () => {
-                        win.webContents.send('menu-save');
-                    }
-                },
-                {
-                    label: 'Save As',
-                    accelerator: 'CmdOrCtrl+Shift+S',
-                    click: () => {
-                        win.webContents.send('menu-save-as');
-                    }
-                },
-                { type: 'separator' },
-                {
-                    label: 'Quit',
-                    accelerator: 'CmdOrCtrl+Q',
-                    click: () => app.quit()
-                }
-            ]
+  {
+    label: 'File',
+    submenu: [
+      {
+        label: 'New Note',
+        accelerator: 'CmdOrCtrl+N',
+        click: () => {
+          win.webContents.send('menu-new-note');
         }
-    ];
-
+      },
+      {
+        label: 'Open File',
+        accelerator: 'CmdOrCtrl+O',
+        click: () => {
+          win.webContents.send('menu-open-file');
+        }
+      },
+      {
+        label: 'Save',
+        accelerator: 'CmdOrCtrl+S',
+        click: () => {
+          win.webContents.send('menu-save');
+        }
+      },
+      {
+        label: 'Save As',
+        accelerator: 'CmdOrCtrl+Shift+S',
+        click: () => {
+          win.webContents.send('menu-save-as');
+        }
+      },
+      { type: 'separator' },
+      {
+        label: 'Quit',
+        accelerator: 'CmdOrCtrl+Q',
+        click: () => app.quit()
+      }
+    ]
+  }
+];
     const menu = Menu.buildFromTemplate(menuTemplate);
     Menu.setApplicationMenu(menu);
 }
@@ -89,9 +101,9 @@ ipcMain.handle('load-note', async () => {
 
 // Delete
 ipcMain.handle('delete-notes', async () => {
-    if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-    }
+
+    fs.writeFileSync(filePath, '');
+
 });
 
 // New

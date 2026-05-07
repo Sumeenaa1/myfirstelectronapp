@@ -20,27 +20,24 @@ window.addEventListener('DOMContentLoaded', async () => {
         status.innerText = ok ? "Saved as new file!" : "Cancelled";
     };
 
+    
     // Delete
-    document.getElementById('delete').onclick = async () => {
-        if (confirm("Delete all notes?")) {
-            await window.api.deleteAll();
-            note.value = '';
-            lastSaved = '';
-            status.innerText = "Deleted!";
-        }
-    };
+document.getElementById('delete').onclick = async () => {
+
+    const confirmDelete = confirm("Delete all notes?");
+
+    if (!confirmDelete) return;
+
+    await window.api.deleteAll();
+
+    location.reload();
+};
 
     // New Note
     document.getElementById('new').onclick = async () => {
-        if (note.value !== lastSaved) {
-            const confirmNew = await window.api.newNote();
-            if (!confirmNew) return;
-        }
 
-        note.value = '';
-        lastSaved = '';
-        status.innerText = "New note started";
-    };
+    location.reload();
+};
 
     // Load Note
     document.getElementById('load').onclick = async () => {
@@ -56,7 +53,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         clearTimeout(timer);
 
         timer = setTimeout(async () => {
-            if (note.value !== lastSaved) {
+            if (note.value.trim() !== '' && note.value !== lastSaved) {
                 await window.api.save(note.value);
                 lastSaved = note.value;
 
@@ -66,17 +63,21 @@ window.addEventListener('DOMContentLoaded', async () => {
         }, 3000);
     });
 
-    // 🔥 MENU SAVE
-    window.api.onMenuSave(async () => {
-        await window.api.save(note.value);
-        lastSaved = note.value;
-        status.innerText = "Saved from menu!";
-    });
+      // NEW: Menu action listeners
+window.api.onMenuAction('menu-new-note', () => {
+  document.getElementById('new').click();   // reuse the existing button logic
+});
 
-    // 🔥 MENU SAVE AS
-    window.api.onMenuSaveAs(async () => {
-        const ok = await window.api.saveAs(note.value);
-        status.innerText = ok ? "Saved as new file!" : "Cancelled";
-    });
+window.api.onMenuAction('menu-open-file', () => {
+  document.getElementById('load').click(); // reuse the existing button logic
+});
+
+window.api.onMenuAction('menu-save', () => {
+  document.getElementById('save').click();      // reuse the existing button logic
+});
+
+window.api.onMenuAction('menu-save-as', () => {
+  document.getElementById('saveAs').click();       // reuse the existing button logic
+});
 
 });
